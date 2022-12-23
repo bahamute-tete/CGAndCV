@@ -1,0 +1,61 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+Texture2D Input;
+Texture2D kernelTex;
+int kernalSize;
+
+
+float4 Rgb2Gray(uint3 id,Texture2D input)
+{
+    return dot(input[id.xy],float4(0.2989, 0.5870, 0.1140, 0));
+}
+
+
+float4 Blur(uint3 id,Texture2D input,Texture2D kernelTex)
+{
+    
+    int w = kernalSize;
+    int h = kernalSize;
+
+    float sum =0;
+    for (int x =0 ; x < w ; x++)
+    {
+        for (int y =0 ; y < h ; y++)
+        {
+           sum += kernelTex[int2(x,y)];
+        }
+    }
+
+    float4 col=float4(0,0,0,0);
+    for (int s=-(w-1)/2 ; s<=(w-1)/2 ;s++)
+    {
+        for (int  t=-(h-1)/2 ; t<=(h-1)/2 ; t++)
+        {
+            col+=input[id.xy+int2(s,t)] * kernelTex[int2((w-1)/2+s,(h-1)/2+t)];
+        }
+
+    }
+    return col/sum;
+
+}
+
+
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+
+    //float4 gray = Rgb2Gray(id,Input);
+
+    float4 blur = Blur(id,Input,kernelTex);
+    //Result[id.xy] =Input[id.xy];
+    Result[id.xy] =blur;
+
+}
+
+

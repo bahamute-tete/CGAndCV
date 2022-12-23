@@ -1,0 +1,175 @@
+﻿// Each #kernel tells which function to comPIle; you can have many kernels
+
+#pragma kernel WaveKernel
+#pragma kernel WaveToMultiWaveKernel
+#pragma kernel WaveToRippleKernel
+#pragma kernel WaveToPerturbingSphereKernel
+#pragma kernel WaveToTorusKernel
+
+#pragma kernel MultiWaveToWaveKernel
+#pragma kernel MultiWaveKernel
+#pragma kernel MultiWaveToRippleKernel
+#pragma kernel MultiWaveToPerturbingSphereKernel
+#pragma kernel MultiWaveToTorusKernel
+
+
+#pragma kernel RippleToWaveKernel
+#pragma kernel RippleToMultiWaveKernel
+#pragma kernel RippleKernel
+#pragma kernel RippleToPerturbingSphereKernel
+#pragma kernel RippleToTorusKernel
+
+
+#pragma kernel PerturbingSphereToWaveKernel
+#pragma kernel PerturbingSphereToMultiWaveKernel
+#pragma kernel PerturbingSphereToRippleKernel
+#pragma kernel PerturbingSphereKernel
+#pragma kernel PerturbingSphereToTorusKernel
+
+
+#pragma kernel TorusToWaveKernel
+#pragma kernel TorusToMultiWaveKernel
+#pragma kernel TorusToRippleKernel
+#pragma kernel TorusToPerturbingSphereKernel
+#pragma kernel TorusKernel
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+
+float _Step,_Ftime,_TransitionProgress;
+RWStructuredBuffer<float3> _Positions;
+uint _Resolution;
+
+
+float2 GetUV (uint3 id)
+{
+	return (id.xy +0.5)*_Step-1.0;//[-1,1] 0.5= half cube
+}
+
+
+void SetPosition(uint3 id,float3 position)
+{
+	if (id.x<_Resolution && id.y<_Resolution)
+	{
+		_Positions[id.x+id.y*_Resolution]= position;
+	}
+}
+
+
+#define PI 3.1415926
+	float3 Wave(float u, float v, float t)
+	{
+		float3 p;
+		p.x = u;
+		p.y = sin(PI * (2*u + 2*v + t));
+		p.z = v;
+		return p;
+	}
+
+	float3 MultiWave(float u, float v, float t)
+	{
+		float3 p;
+		p.x = u;
+		p.y = sin(PI * (u + 0.5 * t));
+		p.y += 0.5f * sin(2 * PI * (1*v + 0.8*t));
+		p.y += sin(PI * (1*u + v + 0.25 * t));
+		p.y *= 1 / 2.5;
+		p.z = v;
+		return p;
+	}
+
+	float3 Ripple(float u, float v, float t)
+	{
+		float3 p;
+		float d = sqrt(u * u + v * v);
+		p.x = u;
+		p.y = sin(PI * (6 * d - 2*t)) / (1 + 10 * d);
+		p.z = v;
+		return p;
+	}
+
+	float3 Sphere(float u, float v, float r)
+	{
+		float3 p;
+		p.x = r * cos(0.5 * PI * v) * sin(PI * u);
+		p.y = r * sin(0.5 * PI * v);
+		p.z = r * cos(0.5 * PI * v) * cos(PI * u);
+		return p;
+	}
+
+	float3 PerturbingSphere(float u, float v, float t)
+	{
+		float3 p;
+
+		float r = 0.9 + 0.1 * sin(PI * (8 * u + 12 * v + t));
+		p = Sphere(u, v, r);
+		return p;
+	}
+
+	float3 Torus(float u, float v, float t)
+	{
+		float3 p;
+
+		//float r1=1f;
+		//float r2=0.25f;
+		float r1 = 0.7 + 0.1 * sin(PI * (16 * u + 0.5 * t));
+		float r2 = 0.15 + 0.05 * sin(PI * (8 * u + 4 * v + 2 * t));
+
+		float r = r2 * cos(PI * v) + r1;
+
+		p.x = r * sin(PI * u);
+		p.y = r2 * sin(PI * v);
+		p.z = r * cos(PI * u);
+
+		return p;
+	}
+
+
+#define KERNEL_FUNCTION(function) \
+[numthreads(8, 8, 1)] \
+void function##Kernel (uint3 id: SV_DispatchThreadID) { \
+	 float2 uv = GetUV(id); \
+	 SetPosition(id, function(uv.x, uv.y, _Ftime)); \
+ }
+
+KERNEL_FUNCTION(Wave)
+KERNEL_FUNCTION(MultiWave)
+KERNEL_FUNCTION(Ripple)
+KERNEL_FUNCTION(PerturbingSphere)
+KERNEL_FUNCTION(Torus)
+
+#define KERNEL_MORPH_FUNCTION(functionA,functionB) \
+[numthreads(8, 8, 1)] \
+void functionA##To##functionB##Kernel (uint3 id: SV_DispatchThreadID) { \
+	 float2 uv = GetUV(id); \
+	 float3 positionlerp = lerp(functionA(uv.x, uv.y, _Ftime),functionB(uv.x, uv.y, _Ftime),_TransitionProgress); \
+	 SetPosition(id, positionlerp); \
+ }
+
+
+KERNEL_MORPH_FUNCTION(Wave,MultiWave)
+KERNEL_MORPH_FUNCTION(Wave,Ripple)
+KERNEL_MORPH_FUNCTION(Wave,PerturbingSphere)
+KERNEL_MORPH_FUNCTION(Wave,Torus)
+
+KERNEL_MORPH_FUNCTION(MultiWave,PerturbingSphere)
+KERNEL_MORPH_FUNCTION(MultiWave,Ripple)
+KERNEL_MORPH_FUNCTION(MultiWave,Wave)
+KERNEL_MORPH_FUNCTION(MultiWave,Torus)
+
+KERNEL_MORPH_FUNCTION(Ripple,PerturbingSphere)
+KERNEL_MORPH_FUNCTION(Ripple,Wave)
+KERNEL_MORPH_FUNCTION(Ripple,MultiWave)
+KERNEL_MORPH_FUNCTION(Ripple,Torus)
+
+KERNEL_MORPH_FUNCTION(PerturbingSphere,Torus)
+KERNEL_MORPH_FUNCTION(PerturbingSphere,Wave);
+KERNEL_MORPH_FUNCTION(PerturbingSphere,MultiWave)
+KERNEL_MORPH_FUNCTION(PerturbingSphere,Ripple)
+
+KERNEL_MORPH_FUNCTION(Torus,Wave)
+KERNEL_MORPH_FUNCTION(Torus,MultiWave)
+KERNEL_MORPH_FUNCTION(Torus,Ripple)
+KERNEL_MORPH_FUNCTION(Torus,PerturbingSphere)

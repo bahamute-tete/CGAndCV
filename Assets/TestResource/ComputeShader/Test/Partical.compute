@@ -1,0 +1,73 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+
+struct ParticleData
+{
+    float3 pos;
+    float4 color;
+};
+
+RWStructuredBuffer<ParticleData> ParticleBuffer;
+
+float _time;
+float _step;
+uint _count;
+
+#define pi  3.1415926
+
+// [numthreads(10,10,10)]
+// void CSMain (uint3 gid:SV_GroupID,uint index:SV_GroupIndex)
+// {
+//     float pindex = gid.x*1000+index;
+
+//     float x = sin(index);
+//     float y = sin(index * 1.2f);
+
+//     float3 forward = float3(x, y, -sqrt(1 - x * x - y * y));
+
+//     ParticleBuffer[pindex].color = float4(forward.x, forward.y, cos(index) * 0.5f + 0.5, 1);
+
+//     if (_time >(float) gid.x)
+//     ParticleBuffer[pindex].pos += forward * 0.005f;
+
+
+// }
+
+float rand(float3 co)
+{
+    return frac(sin(dot(co.xyz, float3(12.9898, 78.233, 53.539))) * 43758.5453);
+}
+
+float2 GetUV(uint3 id)
+{
+    // float2  uv  = (id.xy+0.5)*_step-1;
+    float2  uv  = id.xy*_step-1.0;
+    return  uv;
+}
+
+[numthreads(10,10,1)]
+void CSMain (uint3 gid:SV_GroupID,uint index :SV_GroupIndex ,uint3 id:SV_DispatchThreadID)
+{
+    float r =1;
+    float t= _time;
+    float2 uv = GetUV(id);
+
+    //float pindex = gid.x*1000+index;
+
+    float theta =pi*uv.y;
+    float phi =2*pi*uv.x;
+    float x = r*sin(theta)*cos(phi);
+    float z = r*sin(theta)*sin(phi);
+    float y = r*cos(theta);
+
+    // float x = uv.x;
+    // float z =uv.y;
+    // //float y =sin(pi * (2*uv.x + 2*uv.y + t));
+    // float y =0;
+
+    ParticleBuffer[id.x+id.y*_count].pos = float3(x,y,z);
+    ParticleBuffer[id.x+id.y*_count].color = float4(x,y,z,1);
+
+ 
+}

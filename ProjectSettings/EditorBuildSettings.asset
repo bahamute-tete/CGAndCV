@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/FundamentalMathematics/Level/MainUI.unity
+    guid: 39d1c640f97c542109c69dc7a0b8693f
+  - enabled: 0
+    path: Assets/FundamentalMathematics/Fourier/Fourier.unity
+    guid: 7905376f160dede41a3e0f12a33b2a8d
+  - enabled: 0
+    path: Assets/FundamentalMathematics/LeastSquareMethod/Level/LeastSquare.unity
+    guid: c4abc22c84b7e9141b9de6a5727b49ce
+  - enabled: 0
+    path: Assets/FundamentalMathematics/NewtonIterationMethod/Level/NewtonRaphsonMethod.unity
+    guid: 0a358a3015be90d4fa6c806bc7c48876
+  - enabled: 0
+    path: Assets/FundamentalMathematics/Non_Liner 1DInterpolation/Scene/Non_Liner
+      1DInterpolation.unity
+    guid: 4f12370067d326049bd1b1034473fa75
+  - enabled: 0
+    path: Assets/FundamentalMathematics/TaylorSeries/Level/TaylorSeries.unity
+    guid: c135f69e7d1a0fe4f9181a65266fb0d7
+  - enabled: 0
+    path: Assets/FundamentalMathematics/UnitComplexNumber/Level/UnitComplexNumber.unity
+    guid: 25df61477573f38428a732d7248a1fa8
+  m_configObjects: {}

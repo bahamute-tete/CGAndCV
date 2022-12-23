@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410b9472fde574e0486bc47333e15f7f, type: 3}
+  m_Name: Stream List
+  m_EditorClassIdentifier: 
+  path:
+  - https://stream.mux.com/4XYzhPXzqArkFI8d1vDsScBLD69Gh1b2.m3u8
+  - http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8
+  - http://amssamples.streaming.mediaservices.windows.net/634cd01c-6822-4630-8444-8dd6279f94c6/CaminandesLlamaDrama4K.ism/manifest(format=m3u8-aapl)
+  - https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8

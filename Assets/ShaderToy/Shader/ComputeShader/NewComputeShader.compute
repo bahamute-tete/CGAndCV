@@ -1,0 +1,40 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D Inpute;
+RWTexture2D<float4> Result;
+RWStructuredBuffer<float2> uvs;
+int width;
+int height;
+
+
+
+
+float4 getTexRGBA(float2 p)
+{
+    float2 center = float2(width/2,height/2);
+    float dist = distance(p,center);
+	float mdist = length(center);
+    float4 col = float4(dist/mdist,dist/mdist,dist/mdist,1);
+    return col;
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+
+		//float3 oc = Inpute[id.xy].rgb;
+		//float res = oc.x * 0.299 + oc.y * 0.587 + oc.z * 0.114;
+		//Result[id.xy] = float4(res,res,res, 1.0);
+
+		int index = id.x*width+id.y;
+		float2 p = uvs[index];
+		Result[id.xy] = getTexRGBA(p);
+}
+
+
+
