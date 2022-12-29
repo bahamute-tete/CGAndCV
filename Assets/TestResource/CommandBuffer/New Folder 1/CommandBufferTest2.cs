@@ -19,13 +19,19 @@ public class CommandBufferTest2 : MonoBehaviour
     {
         rt = new RenderTexture(Screen.width, Screen.height, 16);
 
+
+    
+        
         buffer.SetRenderTarget(rt);
         buffer.ClearRenderTarget(true, true, Color.black);
 
         Renderer rd = renderTarget.GetComponent<Renderer>();
+
         Material mat = replaceMat == null ? rd.sharedMaterial : replaceMat;
 
         buffer.DrawRenderer(rd, mat);
+
+
 
         GetComponent<Renderer>().sharedMaterial.mainTexture = rt;
 
