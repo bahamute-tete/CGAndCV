@@ -1,0 +1,73 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+struct Particel
+{
+    float3 pos;
+    float4 color;
+};
+
+float step;
+int resolution;
+
+RWStructuredBuffer<Particel> particels;
+#define PI  3.1415926
+float rand0(float2 uv)
+{
+    return (frac(sin(dot(uv.xy, float2(12.989, 783233))) * 43598.25465));
+}
+
+float rand1(float3 co)
+{
+    return frac(sin(dot(co.xyz, float3(12.9898, 78.233, 53.539))) * 43758.5453);
+}
+
+float3 Sphere(float u, float v, float r)
+	{
+		float3 p;
+		p.x = r * cos(0.5 * PI * v) * sin(PI * u);
+		p.y = r * sin(0.5 * PI * v);
+		p.z = r * cos(0.5 * PI * v) * cos(PI * u);
+		return p;
+	}
+
+float3 Wave(float u, float v, float t)
+{
+    float3 p;
+    p.x = u;
+    p.y = sin(PI * (2 * u + 2 * v + t));
+    p.z = v;
+    return p;
+}
+
+
+void SetPosition(uint3 id, float3 position)
+{
+    // handel with array outof range if our resoulution is not the  multiple of 8
+    if (id.x < resolution && id.y < resolution)
+    {
+        particels[id.x + id.y * resolution].pos = position;
+    }
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = (id.xy+0.5)*step -1.0;
+
+    Particel p = particels[id.x+id.y*resolution];
+
+    SetPosition(id, Sphere(uv.x, uv.y, 1));
+  
+
+    float r = rand0(float2(p.color.r, p.color.g));
+    float g = rand0(float2(p.color.g, p.color.b));
+    float b = rand0(float2(p.color.b, p.color.r));
+
+    if (id.x < resolution && id.y < resolution)
+    {
+        particels[id.x + id.y * resolution].color = float4(r, g, b, 1.);
+    }
+}

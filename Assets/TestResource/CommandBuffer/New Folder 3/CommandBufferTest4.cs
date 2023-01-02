@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using static Noise;
 
 
 public class CommandBufferTest4 : MonoBehaviour
@@ -26,20 +27,30 @@ public class CommandBufferTest4 : MonoBehaviour
     Quaternion[] qs;
     Vector3[] dirs;
 
-    bool isExpand = true;
-
     public bool isCommandBuffer = true;
 
     Vector4[] colors;
 
+
+    public float duration;
+    float value = 0;
+
+
+    [SerializeField]
+    bool autoReverse = false;
     
-    float d=0;
+    public bool Reversed { get; set; }
+    public bool AutoReversed
+    {
+        get => autoReverse;
+        set => autoReverse = value;
+    }
     // Start is called before the first frame update
     void Start()
     {
         cmd = new CommandBuffer() { name = "MeshDraw" };
-        pb = new MaterialPropertyBlock();
 
+        pb = new MaterialPropertyBlock();
         colors = new Vector4[_Count];
         orginalPos = new Vector3[_Count];
         qs = new Quaternion[_Count];
@@ -63,7 +74,7 @@ public class CommandBufferTest4 : MonoBehaviour
             dirs[i] = pos.normalized;
             //matrix4X4s[i] = Matrix4x4.TRS(pos, q, new Vector3(0.1f, 0.1f, 0.1f));
 
-            //colors[i] = new Vector4(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f), 1f);
+            colors[i] = new Vector4(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f), 1f);
         }
 
         pb.SetVectorArray("_Color", colors);
@@ -73,23 +84,49 @@ public class CommandBufferTest4 : MonoBehaviour
     void Update()
     {
 
-        d += Time.deltaTime;
-
-        d = Mathf.Clamp(d, 0f, 5f);
-
-        if (d == 5f)
+        float delta = Time.deltaTime / duration;
+        if (Reversed)
         {
-            d = 5f;
+            value -= delta;
+            if (value <= 0f)
+            {
+                if (autoReverse)
+                {
+                    value = Mathf.Min(1f, -value);
+                    Reversed = false;
+                }
+                else
+                {
+                    value = 0f;
+                   
+                }
+            }
         }
-        
+        else
+        {
+            value += delta;
+            if (value >= 1f)
+            {
+                if (autoReverse)
+                {
+                    value = Mathf.Max(0f, 2f - value);
+                    Reversed = true;
+                }
+                else
+                {
+                    value = 1f;
+                }
+            }
+        }
 
-      
+
+
 
         //Debug.Log("d ==" + d);
 
         for (int i = 0; i < _Count; i++)
         {
-           Vector3 pos = orginalPos[i]+ dirs[i] * d;
+           Vector3 pos = orginalPos[i]+ dirs[i] * value;
 
             matrix4X4s[i] = Matrix4x4.TRS(pos, qs[i], new Vector3(0.1f, 0.1f, 0.1f));
 
@@ -98,18 +135,18 @@ public class CommandBufferTest4 : MonoBehaviour
 
         if (!isCommandBuffer)
         {
-            Graphics.DrawMeshInstanced(mesh, 0, mat, matrix4X4s, _Count);
+            Graphics.DrawMeshInstanced(mesh, 0, mat, matrix4X4s, _Count,pb);
         }
         else
         {
             if (cmd != null)
             {
                 cmd.Clear();
-                Camera.main.RemoveCommandBuffer(CameraEvent.AfterSkybox, cmd);
+                Camera.main.RemoveCommandBuffer(CameraEvent.AfterForwardOpaque, cmd);
             }
 
-            cmd.DrawMeshInstanced(mesh, 0, mat, 0, matrix4X4s, _Count);
-            Camera.main.AddCommandBuffer(CameraEvent.AfterSkybox, cmd);
+            cmd.DrawMeshInstanced(mesh, 0, mat, -1, matrix4X4s, _Count);
+            Camera.main.AddCommandBuffer(CameraEvent.AfterForwardOpaque, cmd);
         }
 
     }
