@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DrawMeshInstanceIndirectTest : MonoBehaviour
 {
-    public int instanceCount = 100000;
+    public int instanceCount = 10000;
     public Mesh instanceMesh;
     public Material instanceMaterial;
 
@@ -48,6 +48,7 @@ public class DrawMeshInstanceIndirectTest : MonoBehaviour
         // positions
         if (positionBuffer != null)
             positionBuffer.Release();
+
         positionBuffer = new ComputeBuffer(instanceCount, 16);
         Vector4[] positions = new Vector4[instanceCount];
         for (int i = 0; i < instanceCount; i++)
@@ -55,7 +56,7 @@ public class DrawMeshInstanceIndirectTest : MonoBehaviour
             float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
             float distance = Random.Range(20.0f, 100.0f);
             float height = Random.Range(-2.0f, 2.0f);
-            float size = Random.Range(0.05f, 0.25f);
+            float size = Random.Range(1f, 2f);
             positions[i] = new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
         }
         positionBuffer.SetData(positions);

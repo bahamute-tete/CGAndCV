@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using static Noise;
-
+using Random = UnityEngine.Random;
 
 public class CommandBufferTest4 : MonoBehaviour
 {
@@ -45,6 +46,13 @@ public class CommandBufferTest4 : MonoBehaviour
         get => autoReverse;
         set => autoReverse = value;
     }
+
+    public struct myBuffers
+    {
+        Vector4 position;
+        Vector4 color;
+
+    };
     // Start is called before the first frame update
     void Start()
     {
