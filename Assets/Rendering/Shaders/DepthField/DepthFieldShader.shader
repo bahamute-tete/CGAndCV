@@ -8,12 +8,11 @@ Shader "Hidden/DepthField"
     CGINCLUDE
          #include "UnityCG.cginc"
 
-        sampler2D _MainTex;
+        sampler2D _MainTex,_CoCTex,_CameraDepthTexture,_DoFTex;
         float4 _MainTex_TexelSize;//float4(1 / width, 1 / height, width, height)
+        float _FocusDistance,_FocusRange,_BokehRadius;
 
 
-        float _FocusDistance,_FocusRange;
-        sampler2D _CameraDepthTexture;
 
           struct appdata
             {
@@ -36,21 +35,7 @@ Shader "Hidden/DepthField"
                 return o;
             }
 
-            half3 Sample(float2 uv)
-            {
-                return tex2D(_MainTex,uv).rgb;
-            }
 
-            half3 SampleBox(float2 uv,float delta)
-            {
-                float4 o = _MainTex_TexelSize.xyxy*float2(-delta,delta).xxyy;//sign =》 -1 -1，+1，+1
-
-                //Sample 4 Conner
-                half3 s= Sample(uv + o.xy)+Sample(uv+o.zy)
-                        + Sample(uv+o.xw)+Sample(uv+o.zw);
-                return s*0.25;
-
-            }
 
         
 
@@ -73,9 +58,9 @@ Shader "Hidden/DepthField"
             #pragma vertex vert
             #pragma fragment frag
          
-         //我们使用的纹理只有一个 R 通道，所以整个 CoC 可视化现在是红色的。
-         //我们需要存储实际的 CoC 值，因此去除负值的着色。
-         //此外，我们可以将片段函数的返回类型更改为单个值。
+         //我们使用的纹理只有一�?? R 通道，所以整�?? CoC 可视化现在是红色的�?
+         //我们需要存储实际的 CoC 值，因此去除负值的着色�?
+         //此外，我们可以将片段函数的返回类型更改为单个值�?
             half frag (v2f i) : SV_Target
             {
 
@@ -84,10 +69,12 @@ Shader "Hidden/DepthField"
                 // depth = Linear01Depth(depth);//(0,1]
                 depth = LinearEyeDepth(depth);//(near，far]
 
-                //将深度中心移到焦距地方并进行一定的比例压缩
-                //导致超出焦距的点的 CoC 值为正，而焦距前面的点的 CoC 值为负
+       
                 float coc = (depth-_FocusDistance)/_FocusRange;
-                coc = clamp(coc,-1,1);
+
+                //scale the CoC value by the bokeh radius
+
+                coc = clamp(coc,-1,1)*_BokehRadius;
 
                 // if (coc<0)
                 //     return  coc *-half4(1,0,0,1);
@@ -97,13 +84,70 @@ Shader "Hidden/DepthField"
             ENDCG
         }
 
+        pass
+        {//1 preFileterPass 
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+
+
+            half Weigh (half3 c)
+            {
+					return 1 / (1 + max(max(c.r, c.g), c.b));
+		    }
+
+            //sampling from the four high-resolution to  low-resolution  
+            //and average them. 
+            //Store the result in the alpha channel.
+            half4 frag (v2f i) : SV_Target
+            {
+                    float4 o = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
+
+                    //Toning Down the Bokeh
+                    half3 s0 = tex2D(_MainTex, i.uv + o.xy).rgb;
+                    half3 s1 = tex2D(_MainTex, i.uv + o.zy).rgb;
+                    half3 s2 = tex2D(_MainTex, i.uv + o.xw).rgb;
+                    half3 s3 = tex2D(_MainTex, i.uv + o.zw).rgb;
+
+                    half w0 = Weigh(s0);
+                    half w1 = Weigh(s1);
+                    half w2 = Weigh(s2);
+                    half w3 = Weigh(s3);
+
+                    half3 color = s0 * w0 + s1 * w1 + s2 * w2 + s3 * w3;
+                    color /= max(w0 + w1 + w2 + w3, 0.00001);
+
+
+					half coc0 = tex2D(_CoCTex, i.uv + o.xy).r;
+					half coc1 = tex2D(_CoCTex, i.uv + o.zy).r;
+					half coc2 = tex2D(_CoCTex, i.uv + o.xw).r;
+					half coc3 = tex2D(_CoCTex, i.uv + o.zw).r;
+
+                    //regular downsample
+                    // half coc = (coc0+coc1+coc2+coc3)*0.25;
+
+                    //take the most extreme CoC value of the four texels, 
+                    //either positive or negative.
+
+                   half cocMin = min(min(min(coc0, coc1), coc2), coc3);
+				   half cocMax = max(max(max(coc0, coc1), coc2), coc3);
+				   half coc = cocMax >= -cocMin ? cocMax : cocMin;
+
+             
+                return half4(color, coc);
+            }
+            ENDCG
+        }
+
+
         Pass
-        { //1 bokehPass
+        { //2 bokehPass
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #define BOKEH_KERNEL_MEDIUM
-            //定义一个数组，其中包含所有重要的偏移量并循环遍历它，而不是检查每个样本是否有效
+            //定义一个数组，其中包含所有重要的偏移量并循环遍历它，而不是检查每个样本是否有�??
             // From https://github.com/Unity-Technologies/PostProcessing/
             // blob/v2/PostProcessing/Shaders/Builtins/DiskKernels.hlsl
 
@@ -157,39 +201,55 @@ Shader "Hidden/DepthField"
             #endif
 
 
+            half Weight(half coc ,half radius)
+            {
+                //Instead of completely discarding samples, 
+                //we'll assign them a weight in the 0�C1 range. 
+                return saturate((coc - radius + 2) / 2);;
+            }
+
             half4 frag (v2f i) : SV_Target
             {
-                half3 color = 0;
-                // float weight =0;
-                // for (int u = -4; u <=4;u++)
-                // {
-                //     for (int v = -4;v <=4;v++)
-                //     {
-                //         float2 uvOffset = float2(u,v);
+                half coc = tex2D(_MainTex,i.uv).a;
+                half3 bgcolor = 0,fgcolor =0;
+                float bgweight =0,fgweight=0;
 
-                //         if (length(uvOffset)<4)
-                //         {
-                //             uvOffset *= _MainTex_TexelSize.xy*2;
-                //             color +=tex2D(_MainTex,i.uv+uvOffset).rgb;
-                //             weight+=1;
-                //         }
-                //     }  
-                // }
 
                 for (int  k =0;k<kernelSampleCount;k++)
                 {
-                    float2 uvOffset = kernel[k];
-                    //保持相同的圆盘半径，偏移量乘以 8
+                    float2 uvOffset = kernel[k]*_BokehRadius;
+
+                    half radius = length(uvOffset);
+                    //保持相同的圆盘半径，偏移量乘�?? 8
                     //uvOffset *=_MainTex_TexelSize*8;
+                    
 
                     //因为在申请RT的时候做了一次减半的下采样，为了保持一样的大小，偏移量减半
-                    uvOffset *=_MainTex_TexelSize*4;
-                    color +=tex2D(_MainTex,i.uv+uvOffset).rgb;
+                    uvOffset *=_MainTex_TexelSize.xy;
 
+                    half4 s = tex2D(_MainTex,i.uv+uvOffset);
+                    //color +=tex2D(_MainTex,i.uv+uvOffset).rgb;
+
+                    // if (abs(s.a)>= radius)
+                    // {
+                    //     color +=s.rgb;
+                    //     weight +=1;
+                    // }
+                    half bgsw = Weight(max(0,min(s.a,coc)),radius);
+                    bgcolor+=s.rgb*bgsw;
+                    bgweight+=bgsw;
+
+                     half fgsw = Weight(-s.a,radius);
+                    fgcolor+=s.rgb*fgsw;
+                    fgweight+=fgsw;
                 }
 
-                color *=1./kernelSampleCount; 
-                return half4(color,1);
+                bgcolor *= 1./(bgweight+(bgweight==0));
+                fgcolor *= 1./(fgweight+(fgweight==0));
+                half bgfg = min(1,fgweight * 3.14159265359/kernelSampleCount);
+                half3 color = lerp(bgcolor,fgcolor,bgfg);
+                //put it in the alpha channel of the DoF texture
+                return half4(color,bgfg);
                
             }
             ENDCG
@@ -197,11 +257,12 @@ Shader "Hidden/DepthField"
 
 
         Pass
-        { //2 PostFilterPass
+        { //3 PostFilterPass
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-         
+
+
             half4 frag (v2f i) : SV_Target
             {
                float4 o = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
@@ -215,6 +276,28 @@ Shader "Hidden/DepthField"
             ENDCG
         }
 
+
+        Pass
+        { //4 combinePass
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+         
+            half4 frag (v2f i) : SV_Target
+            {
+               half4 source = tex2D(_MainTex,i.uv);
+
+               half coc = tex2D(_CoCTex,i.uv).r;
+               half4 dof  = tex2D(_DoFTex,i.uv);
+
+               half dofStrenth = smoothstep(0.1,1,coc);
+
+
+               half3 color = lerp(source.rgb,dof.rgb,dofStrenth +dof.a-dofStrenth* dof.a);
+               return half4(color,source.a);
+            }
+            ENDCG
+        }
 
 
 

@@ -7,12 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TessellationMat
-  m_Shader: {fileID: 4800000, guid: 0a5e6ca53be6f44c4a8d67d23ab4bf3d, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _NORMALMAP
-  - _PARALLAXMAP
+  m_Name: Parallax
+  m_Shader: {fileID: 4800000, guid: d38de04dc18d84186a7ae45b08598e8c, type: 3}
+  m_ValidKeywords:
+  - _DETAIL_ALBEDO_MAP
+  - _NORMAL_MAP
+  - _PARALLAX_MAP
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -23,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: d2c4ad2e47d114f8586f5dffbd592e55, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -38,36 +39,28 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _DispTex:
-        m_Texture: {fileID: 2800000, guid: 60cda3e0bd1524087ae059ff46b8251e, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Displacement:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+    - _DetailTex:
+        m_Texture: {fileID: 2800000, guid: 9131044dce4134bf199b3419f9296cf1, type: 3}
+        m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 874f7a84a40884add8a90a2dc61dc931, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Normal:
+    - _MetallicMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: d2c4ad2e47d114f8586f5dffbd592e55, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NormalTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 2631267ac149742a295cbbb3525032f6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -75,32 +68,35 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
-        m_Texture: {fileID: 2800000, guid: 60cda3e0bd1524087ae059ff46b8251e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 904bb7f34c55a47fe8d718cf587904be, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _DetailBumpScale: 1
     - _DetailNormalMapScale: 1
-    - _Displacement: 0.306
-    - _DisplacementIntensity: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.298
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Parallax: 0.08
+    - _Parallax: 0.02
+    - _ParallaxStrength: 0.1
+    - _Smoothness: 0.655
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Tess: 4.2
     - _UVSec: 0
+    - _WireframeSmoothing: 1
+    - _WireframeThickness: 1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Emission: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _WireframeColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
