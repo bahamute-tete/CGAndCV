@@ -77,10 +77,10 @@
             struct FragOutput
             {
                 #if defined (DEFERRED_PASS)
-                float4 gBuffer0:SV_Target0;//albedo
-                float4 gBuffer1:SV_Target1;//specular smoothness
+                float4 gBuffer0:SV_Target0;//albedo RGB ； occlusion is stored in the A
+                float4 gBuffer1:SV_Target1;//specular color in the RGB channels, and the smoothness value in the A channel
                 float4 gBuffer2:SV_Target2;//normal ARGB210101010
-                float4 gBuffer3:SV_Target3;//accumulate light  ARGB210101010
+                float4 gBuffer3:SV_Target3;//accumulate light  ARGB210101010 (LDR) 
                 #else
                 float4 color:SV_Target;
                 #endif

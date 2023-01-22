@@ -32,7 +32,9 @@
             float4 frag(v2f i):SV_TARGET
             {
                 float depth = length(i.lightVec)+unity_LightShadowBias.x;
-                depth*= _LightPositionRange.w;//_LightPositionRange.w variable contains the inverse of its range, so we have to multiply by this value. 
+                //_LightPositionRange.w variable contains the inverse of its range, 
+                //so we have to multiply by this value. 
+                depth*= _LightPositionRange.w;
                 return UnityEncodeCubeShadowDepth(depth);
             } 
 
@@ -42,7 +44,12 @@
             {
                 
                 float4 position =UnityClipSpaceShadowCasterPos(v.position.xyz,v.normal);//To  support the normal bias
- 
+
+
+                //////////////////////////////////////////////////////////////
+                // The normal bias is only supported for directional shadows,// 
+                // but it's simply set to zero for other lights.             //
+                //////////////////////////////////////////////////////////////
 
                 return UnityApplyLinearShadowBias(position); //To support the depth bias
             }

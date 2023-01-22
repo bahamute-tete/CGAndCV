@@ -102,12 +102,14 @@
 
                 o.uv.xy = TRANSFORM_TEX(v.uv,_Texture);
                 o.uv.zw = TRANSFORM_TEX(v.uv,_DetailTexture);
-
+                //mannual canculate screen coordinates
+                //screenXY = (xy/w*0.5+0.5)==> screenXY * w =xy*0.5+w*0.5 = (xy+w)*0.5
                 // #if defined(SHADOWS_SCREEN)
                 // //o.shadowCoordinates.xy = (o.position.xy+o.position.w)*0.5;//OpengGL 
                 // // o.shadowCoordinates.xy = (float2(o.position.x,-o.position.y)+o.position.w)*0.5;//D3D
                 // // o.shadowCoordinates.zw = o.position.zw;
                 // //Use Unity Code
+                //_ProjectParams.x variable is −1 when the Y coordinate needs to be flipped.
                 // o.shadowCoordinates = ComputeScreenPos (o.position);
                 // #endif
                 TRANSFER_SHADOW(o);
@@ -133,9 +135,9 @@
                 // UNITY_LIGHT_ATTENUATION(attenuation,0,i.worldPostion);
                 // #endif
 
-                //the UNITY_LIGHT_ATTENUATION macro already uses SHADOW_ATTENUATION So we can su"ce with using just that macro
+                //the UNITY_LIGHT_ATTENUATION macro already uses SHADOW_ATTENUATION 
                 UNITY_LIGHT_ATTENUATION(attenuation,i,i.worldPostion);
-
+              
                 light.color=_LightColor0.rgb*attenuation;
                 light.ndotl=DotClamped(i.worldNormal,light.dir);
                 return light;
