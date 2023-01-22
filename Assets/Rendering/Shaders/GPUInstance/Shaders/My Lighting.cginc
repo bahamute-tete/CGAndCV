@@ -7,6 +7,7 @@
 	#define ALBEDO_FUNCTION GetAlbedo
 #endif
 
+
 void ComputeVertexLightColor (inout InterpolatorsVertex i) {
 
 	#if defined(VERTEXLIGHT_ON)
@@ -27,17 +28,15 @@ float3 CreateBinormal (float3 normal, float3 tangent, float binormalSign) {
 InterpolatorsVertex MyVertexProgram (VertexData v) {
 	InterpolatorsVertex i;
 	UNITY_INITIALIZE_OUTPUT(InterpolatorsVertex, i);
-	
+	//make the ID globally available
+	UNITY_SETUP_INSTANCE_ID(v);
+	//In the vertex program, copy the ID from the vertex data to the interpolators.
+	UNITY_TRANSFER_INSTANCE_ID(v,i);
 
 	i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
 	i.uv.zw = TRANSFORM_TEX(v.uv, _DetailTex);
 
-	#if VERTEX_DISPLACEMENT
-		float displacement = tex2Dlod(_DisplacementMap, float4(i.uv.xy, 0, 0)).g;
-		displacement = (displacement - 0.5) * _DisplacementStrength;
-		v.normal = normalize(v.normal);
-		v.vertex.xyz += v.normal * displacement;
-	#endif
+
 
 	i.pos = UnityObjectToClipPos(v.vertex);
 	i.worldPos.xyz = mul(unity_ObjectToWorld, v.vertex);
@@ -436,7 +435,8 @@ struct FragmentOutput {
 };
 
 FragmentOutput MyFragmentProgram (Interpolators i) {
-	
+	//make the ID globally available
+	UNITY_SETUP_INSTANCE_ID(i);
 	#if defined(LOD_FADE_CROSSFADE)
 		UnityApplyDitherCrossFade(i.vpos);
 	#endif

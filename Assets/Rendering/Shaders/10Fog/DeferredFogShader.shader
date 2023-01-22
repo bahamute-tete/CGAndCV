@@ -61,11 +61,28 @@ Shader "Unlit/DeferredFogShader"
             fixed4 frag (v2f i) : SV_Target
             {
                 float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv);
+/////////////////////////////////////////////////////////////////////////////               
+//// Z buffer to linear 0..1 depth
+// inline float Linear01Depth( float z )
+// {
+// 	return 1.0 / (_ZBufferParams.x * z + _ZBufferParams.y);
+// }  
+/////// //////////////////////////////////////////////////////////////////////
+// Values used to linearize the Z buffer
+// (http://www.humus.name/temp/Linearize%20depth.txt)
+// x = 1-far/near
+// y = far/near
+// z = x/far
+// w = y/far
+//float4 _ZBufferParams; 
+/////////////////////////////////////////////////////////////////////////////       
                 depth = Linear01Depth(depth);
 
                 float viewDistance = depth * _ProjectionParams.z - _ProjectionParams.y;//near distance plane
 
                 #if defined(FOG_DISTANCE)
+                //use depth to scale the ray 
+                //because we only need the ray length
                     viewDistance = length(i.ray*depth);
                 #endif
 

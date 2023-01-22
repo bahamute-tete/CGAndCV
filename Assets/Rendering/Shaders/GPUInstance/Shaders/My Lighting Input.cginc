@@ -1,4 +1,6 @@
-﻿// Upgrade NOTE: upgraded instancing buffer 'InstanceProperties' to new syntax.
+﻿// Upgrade NOTE: upgraded instancing buffer 'instanceProperties' to new syntax.
+
+// Upgrade NOTE: upgraded instancing buffer 'InstanceProperties' to new syntax.
 
 #if !defined(MY_LIGHTING_INPUT_INCLUDED)
 #define MY_LIGHTING_INPUT_INCLUDED
@@ -49,8 +51,22 @@ float3 _Emission;
 
 float _Cutoff;
 
+
+
+UNITY_INSTANCING_BUFFER_START(instanceProperties)
+//Multiple properties can be combined in the same buffer, but keep the size limitation in mind.
+//be aware that the buffers are partitioned into 32-bit blocks, 
+//so a single floats requires the same space as a vector
+//You can also use multiple buffers, but that not free
+   UNITY_DEFINE_INSTANCED_PROP(float4 ,_Color) 
+//It now requires you to provide the buffer name as the first agument
+#define _Color_arr instanceProperties
+UNITY_INSTANCING_BUFFER_END(instanceProperties)
+
+
 struct VertexData {
 	
+	UNITY_VERTEX_INPUT_INSTANCE_ID
 	float4 vertex : POSITION;
 	float3 normal : NORMAL;
 	float4 tangent : TANGENT;
@@ -60,7 +76,7 @@ struct VertexData {
 };
 
 struct InterpolatorsVertex {
-	
+	UNITY_VERTEX_INPUT_INSTANCE_ID
 	float4 pos : SV_POSITION;
 	float4 uv : TEXCOORD0;
 	float3 normal : TEXCOORD1;
@@ -98,7 +114,7 @@ struct InterpolatorsVertex {
 };
 
 struct Interpolators {
-	
+	UNITY_VERTEX_INPUT_INSTANCE_ID
 	#if defined(LOD_FADE_CROSSFADE)
 		UNITY_VPOS_TYPE vpos : VPOS;
 	#else
@@ -151,7 +167,7 @@ float GetDetailMask (Interpolators i) {
 
 float3 GetAlbedo (Interpolators i) {
 	float3 albedo =
-		tex2D(_MainTex, i.uv.xy).rgb * UNITY_ACCESS_INSTANCED_PROP(_Color_arr, _Color).rgb;
+		tex2D(_MainTex, i.uv.xy).rgb *UNITY_ACCESS_INSTANCED_PROP(_Color_arr, _Color).rgb;
 	#if defined (_DETAIL_ALBEDO_MAP)
 		float3 details = tex2D(_DetailTex, i.uv.zw) * unity_ColorSpaceDouble;
 		albedo = lerp(albedo, albedo * details, GetDetailMask(i));
@@ -160,7 +176,7 @@ float3 GetAlbedo (Interpolators i) {
 }
 
 float GetAlpha (Interpolators i) {
-	float alpha = UNITY_ACCESS_INSTANCED_PROP(_Color_arr, _Color).a;
+	float alpha =UNITY_ACCESS_INSTANCED_PROP(_Color_arr, _Color).a;
 	#if !defined(_SMOOTHNESS_ALBEDO)
 		alpha *= tex2D(_MainTex, i.uv.xy).a;
 	#endif

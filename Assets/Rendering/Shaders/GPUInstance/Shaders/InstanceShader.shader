@@ -64,6 +64,12 @@
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
 			#pragma multi_compile_instancing
+			// adding the lodfade instancing option for each pass that supports instancing.
+
+			//mobiles are assumed to have a maximum of only 16KB. 
+			//Unity copes with this by simply dividing the maximum by four 
+			//when targeting OpenGL ES 3, OpenGL Core, or Metal.
+			//disable this automatic reduction ==>force_same_maxcount_for_gl
 			#pragma instancing_options lodfade force_same_maxcount_for_gl
 
 			#pragma vertex MyVertexProgram
@@ -134,7 +140,10 @@
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_prepassfinal
+			//To use instancing in combination with multiple lights, 
+			//we have no choice but to switch to the deferred rendering path
 			#pragma multi_compile_instancing
+			// adding the lodfade instancing option for each pass that supports instancing.
 			#pragma instancing_options lodfade
 
 			#pragma vertex MyVertexProgram

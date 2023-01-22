@@ -90,7 +90,7 @@ float GetAlpha (Interpolators i) {
 InterpolatorsVertex MyShadowVertexProgram (VertexData v) {
 	InterpolatorsVertex i;
 	UNITY_SETUP_INSTANCE_ID(v);
-	UNITY_TRANSFER_INSTANCE_ID(v, i);
+	UNITY_TRANSFER_INSTANCE_ID(v,i);
 
 	#if SHADOWS_NEED_UV
 		i.uv = TRANSFORM_TEX(v.uv, _MainTex);

@@ -227,7 +227,31 @@
                     //possibly reversed clip-space Z dimension.
                     viewDistance =UNITY_Z_0_FAR_FROM_CLIPSPACE( i.worldPosition.w);//Clip-space depth Fog
                     #endif
-
+///////////////////////////////////UNITY_CALC_FOG_FACTOR_RAW////////////////////
+//#if defined(FOG_LINEAR)
+// factor = (end-z)/(end-start) = z * (-1/(end-start))+(end/(end-start))
+// #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = \
+//     (coord) * unity_FogParams.z + unity_FogParams.w
+// #elif defined(FOG_EXP)
+// // factor = exp(-density*z)
+// #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = \
+//     unity_FogParams.y * (coord); \
+//     unityFogFactor = exp2(-unityFogFactor)
+// #elif defined(FOG_EXP2)
+// // factor = exp(-(density*z)^2)
+// #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = \
+//     unity_FogParams.x * (coord); \
+//     unityFogFactor = exp2(-unityFogFactor*unityFogFactor)
+// #else
+// #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = 0.0
+// #endif
+//////////////////////////////////////////////////////////////////////////////////
+// x = density / sqrt(ln(2)), useful for Exp2 mode
+// y = density / ln(2), useful for Exp mode
+// z = -1/(end-start), useful for Linear mode
+// w = end/(end-start), useful for Linear mode
+//float4 unity_FogParams;
+//////////////////////////////////////////////////////////////////////////////////
                     UNITY_CALC_FOG_FACTOR_RAW(viewDistance);
                     float3 fogcolor = 0;
                     #if defined(FORWARD_BASE_PASS)

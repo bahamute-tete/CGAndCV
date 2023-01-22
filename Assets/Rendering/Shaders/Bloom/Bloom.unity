@@ -1089,10 +1089,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bloomShader: {fileID: 4800000, guid: 817d917ac1943ac4e99cb01d84a4636a, type: 3}
-  intensity: 0.8
-  iterations: 7
-  threshold: 1
-  softThreshold: 0.716
+  intensity: 0
+  iterations: 1
+  threshold: 2.27
+  softThreshold: 0.237
   debug: 0
 --- !u!1 &1829234564
 GameObject:
