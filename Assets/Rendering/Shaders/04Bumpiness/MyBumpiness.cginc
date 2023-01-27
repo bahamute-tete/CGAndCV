@@ -171,6 +171,20 @@
                 float3 normal = UnpackScaleNormal(tex2D(_NormalMap,i.uv.xy),_BumpScale);
                 float3 detailNormal = UnpackScaleNormal(tex2D(_NormalDetailMap,i.uv.zw),_NormalDetailScale);
                 
+/////////////////////////////////////////////////////////NormalBlend
+// tangent vector  = [1,f`(u),0]
+// bitangent vector = [0,f`(v),1]
+// normal vector = tangent  corss bitangent = [-f`(u),1,-f`(v)]
+// in normal map should swap Y and Z component which wanted use world derivative representation
+//===>[-f`(u),-f`(v),1]
+// because  normalized normal vector is equal multiply a scalar S so original normal vector ==>[-Sf`(u),-Sf`(v),S]
+// if we divide Z component we should get derivatives f`(u) and f`(v)
+///////////////////////////////////////////////////////////whiteout methord///////
+//so 2 normal vector blend ==>[M(x)/M(z)+D(x)/D(z),M(y)/M(y)+D(y)/D(z),1] (M= mainTexnormal D= detailTexNormal)
+// if we multiply the new normal by M(z)D(Z) we can get [M(x)D(z)+D(x)M(z),M(y)D(z)+D(y)M(z),M(z)D(z)]
+//drop the scaling of X and Y, ==>[M(x)+D(x),M(y)+D(y),M(z)D(z)]
+//////////////////////////////////////////////////////////
+
                 //i.worldNormal = (normal + detailNormal) * 0.5;//average 
 
                 //i.worldNormal = float3(normal.xy/normal.z+detailNormal.xy/detailNormal.z,1);//derivative Add

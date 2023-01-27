@@ -97,7 +97,7 @@ Material:
     - _WaterFogDensity: 0.15
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.7122642, g: 0.94740313, b: 1, a: 0.2901961}
+    - _Color: {r: 0.6745283, g: 0.94203925, b: 1, a: 0.2901961}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _WaterFogColor: {r: 0.30588236, g: 0.5137255, b: 0.6627451, a: 1}
   m_BuildTextureStacks: []
