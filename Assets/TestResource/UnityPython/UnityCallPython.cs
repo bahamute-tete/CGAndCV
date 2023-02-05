@@ -2,16 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
+using UnityEditor.Scripting.Python;
+using System.IO;
 
 public class UnityCallPython : MonoBehaviour
 {
 
-    public string[] argvs = new string[2] {"10", "20"};
+    private string[] argvs = new string[2] {"10", "20"};
 
-    public float a = 0;
-    public string b = null;
-    public int c = 0;
-    // Start is called before the first frame update
+    private float a = 0;
+    string b = null;
+    int c = 0;
+
+    string path = @"D:\Python\Test.py";
+
     void Start()
     {
         
@@ -22,23 +26,32 @@ public class UnityCallPython : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CallPythonCode(argvs);
 
-            UnityEngine.Debug.Log(a*2);
+            //CallPythonCode(argvs);
+            PythonRunner.RunFile(path);
+
         }
     }
 
     void CallPythonCode(string[] argvs)
     {
+
+        
         Process p = new Process();
+        //MAC
+        //string path = @"/Users/xuchengqi/UnityProject/UnityProj/CGAndCV/Assets/TestResource/UnityPython/python4Unity.py" + " "+argvs[0] + " " + argvs[1];
 
-        string path = @"/Users/xuchengqi/UnityProject/UnityProj/CGAndCV/Assets/TestResource/UnityPython/python4Unity.py" + " "+argvs[0] + " " + argvs[1];
+        //Windows
+        //string path = @"D:\UnityProject\GitHub\CGAndCV\Assets\TestResource\UnityPython\PCA.py";
+        string path = @"D:\Python\Test.py";
 
-        
+        //MAC
+        // p.StartInfo.FileName = @"/Users/xuchengqi/opt/anaconda3/bin/pythonw";
 
-        p.StartInfo.FileName = @"/Users/xuchengqi/opt/anaconda3/bin/pythonw";
+        //windows 
+        p.StartInfo.FileName = @"D:\Soft\anaconda3\python.exe";
+   
 
-        
 
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.Arguments = path;
@@ -53,8 +66,8 @@ public class UnityCallPython : MonoBehaviour
         p.OutputDataReceived += new DataReceivedEventHandler(GetData);
         p.WaitForExit();
 
-       
-       
+        UnityEngine.Debug.Log("1111");
+
 
     }
 
@@ -65,8 +78,6 @@ public class UnityCallPython : MonoBehaviour
         {
             UnityEngine.Debug.Log(eventArgs.Data);
         }
-
-        a = float.Parse(eventArgs.Data);
 
     }
 }

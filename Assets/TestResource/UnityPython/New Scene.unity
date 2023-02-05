@@ -123,6 +123,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &370623111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 370623112}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &370623112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370623111}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &647472263
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,9 +163,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 647472265}
-  - component: {fileID: 647472264}
-  - component: {fileID: 647472266}
-  - component: {fileID: 647472267}
+  - component: {fileID: 647472269}
+  - component: {fileID: 647472268}
   m_Layer: 0
   m_Name: C#
   m_TagString: Untagged
@@ -142,24 +172,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &647472264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 647472263}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 806e064acdfe44dea91c3198982bf1b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  argvs:
-  - 12.3
-  - 33.2
-  a: 0
-  b: 
-  c: 0
 --- !u!4 &647472265
 Transform:
   m_ObjectHideFlags: 0
@@ -175,7 +187,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &647472266
+--- !u!114 &647472268
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -184,15 +196,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 647472263}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd88138ff879248c58486c2d0d0efb03, type: 3}
+  m_Script: {fileID: 11500000, guid: 164be1e6eca8cce44a44b1d36aa0e89c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eigenValues: {x: 0, y: 0, z: 0}
-  eigenVectors:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
---- !u!114 &647472267
+  R: {x: 0, y: 0, z: 0}
+  S: {x: 0, y: 0, z: 0}
+  T: {x: 0, y: 0, z: 0}
+  min_max_R: {x: 0, y: 0}
+  min_max_S: {x: 0, y: 0}
+  min_max_T: {x: 0, y: 0}
+  poins: []
+--- !u!114 &647472269
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -201,13 +215,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 647472263}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46632b647da1945e9a021e4bd5ebaa16, type: 3}
+  m_Script: {fileID: 11500000, guid: 806e064acdfe44dea91c3198982bf1b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 450849363394231579, guid: 3d6892b0b2dfa43ac94a31b69ea4845a, type: 3}
-  instances: 10
-  radius: 10
-  position: []
 --- !u!1 &877589394
 GameObject:
   m_ObjectHideFlags: 0

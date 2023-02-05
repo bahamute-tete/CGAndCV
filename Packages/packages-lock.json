@@ -102,6 +102,13 @@
       },
       "url": "https://packages.unity.cn"
     },
+    "com.unity.scripting.python": {
+      "version": "5.0.0-pre.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
     "com.unity.searcher": {
       "version": "4.9.1",
       "depth": 0,
