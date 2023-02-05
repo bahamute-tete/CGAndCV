@@ -55,6 +55,8 @@ public class Game : PersistableObject
             instance.Load(reader);
             shapes.Add(instance);
         }
+
+       
     }
 
 
