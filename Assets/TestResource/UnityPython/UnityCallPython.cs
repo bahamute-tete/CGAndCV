@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Diagnostics;
 using UnityEditor.Scripting.Python;
 using System.IO;
+using MathNet.Numerics.LinearAlgebra;
 
 public class UnityCallPython : MonoBehaviour
 {
