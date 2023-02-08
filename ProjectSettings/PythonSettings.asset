@@ -5,8 +5,7 @@
         "m_Name": "",
         "m_EditorClassIdentifier": "Unity.Scripting.Python.Editor:UnityEditor.Scripting.Python:PythonSettings",
         "m_sitePackages": [
-            "d:\\soft\\anaconda3\\lib\\site-packages",
-            "Assets/site-packages"
+            "D:\\Soft\\anaconda3\\Lib\\site-packages"
         ]
     }
 }
