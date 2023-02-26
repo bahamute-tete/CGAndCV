@@ -103,7 +103,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.scripting.python": {
-      "version": "5.0.0-pre.5",
+      "version": "6.0.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
-using UnityEditor.Scripting.Python;
+
 using System.IO;
 using MathNet.Numerics.LinearAlgebra;
 
@@ -25,13 +25,13 @@ public class UnityCallPython : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
 
-            //CallPythonCode(argvs);
-            PythonRunner.RunFile(path);
+        //    //CallPythonCode(argvs);
+        //    PythonRunner.RunFile(path);
 
-        }
+        //}
     }
 
     void CallPythonCode(string[] argvs)
