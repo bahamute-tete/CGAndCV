@@ -113,30 +113,30 @@
 				uv = uv*_ScreenParams/_ScreenParams.y;
 //////////////////////////////////////////////////////////////
 				//float c = Noisy2D(uv);
-				uv+=_Time.x*5;
-				float c = ValueNoisy(uv);
-				float m = NosiyVector2(uv).x;
-				col+=c;
+				//uv+=_Time.x*5;
+				//float c = ValueNoisy(uv);
+				//float m = NosiyVector2(uv).x;
+				//col+=c;
 ////////////////////////////////////////
-				//float m =0;
+				float m =0;
 				//float mindis = 100;
 				//float cellIndex =0 ;
 				//if (false)
 				//{
-				//	for (int  i  =  0  ; i < 50 ;i ++)
-				//{
-				//	float2 n= NosiyVector2(float2 (i , i));
-				//	float2 p = sin (n *_Time.y*0.2);
+					for (int  i  =  0  ; i < 50 ;i ++)
+				{
+					float2 n= NosiyVector2(float2 (i , i));
+					float2 p = sin (n *_Time.y*0.2);
 
-				//	float d = length (uv - p);
-				//    m +=  smoothstep(0.02,0.015,d);
+					float d = length (uv - p);
+				    m +=  smoothstep(0.02,0.015,d);
 
 				//	if (d < mindis)
 				//	{
 				//		mindis =d;
 				//		cellIndex = i;
 				//	}
-				//}
+				}
 				//}else
 				//{
 				//	uv *= 5;
@@ -172,6 +172,7 @@
 
 				//col = cellIndex/50;
 				//col.rg = gridUV;
+				col.rgb= m;
 				
                 return col;
             }

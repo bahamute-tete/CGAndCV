@@ -3,7 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-		_iChannel0("Tex0",2D) = "white" {}
+		_iChannel0("Tex0",Cube) = "white" {}
 		_iChannel1("Tex1",2D) = "white" {}
     }
     SubShader
@@ -35,7 +35,7 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-			sampler2D _iChannel0;
+			samplerCUBE _iChannel0;
 			sampler2D _iChannel1;
 
 			float N21(float2 p)
@@ -280,7 +280,7 @@
 					col = tex2D( _iChannel1, nor );
 
 					float fre = 0.3 + 0.7*pow( clamp( 1.0 + dot( rd, nor ), 0.0, 1.0 ), 10.0 );
-					float4 sss = tex2D( _iChannel0, reff );
+					float4 sss = texCUBE( _iChannel0, reff );
 					col += 2.0*pow(sss,4.0)*fre;
 
 					col =ao*col*col*diff*sha*rim;

@@ -36,7 +36,7 @@
             float4 _MainTex_ST;
 			float _t;
 
-
+			
 
 			float checkersTextureGradBox(  float2 p,  float2 ddx,  float2 ddy )
 			{

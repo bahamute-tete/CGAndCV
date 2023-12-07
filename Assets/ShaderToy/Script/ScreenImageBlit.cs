@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class ScreenImageBlit : MonoBehaviour
+public class ScreenImageBlit : SceneViewFilter
 {
 
     public Shader shader;
+    public Camera camera;
 
-    Material mat;
+
+    public Material mat;
 
     private void Awake()
     {
+        camera.depthTextureMode = DepthTextureMode.Depth;
         if (!mat)
         {
             mat = new Material(shader);
@@ -24,6 +27,7 @@ public class ScreenImageBlit : MonoBehaviour
         if (mat)
         {
             Graphics.Blit(source, destination, mat);
+            mat.SetTexture("_MainTex", source);
         }
         else
         {

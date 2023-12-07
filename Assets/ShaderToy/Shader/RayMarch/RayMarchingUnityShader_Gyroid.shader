@@ -264,7 +264,7 @@
                 v2f o;
 
 				float index = v.vertex.z;
-				v.vertex.z = 0.1;
+				v.vertex.z = 0.01;
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;

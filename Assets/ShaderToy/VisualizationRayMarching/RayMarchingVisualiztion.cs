@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
+using Unity.Mathematics;
+using static Unity.Mathematics.math;
 
 public class RayMarchingVisualiztion : MonoBehaviour
 {
@@ -90,9 +92,9 @@ public class RayMarchingVisualiztion : MonoBehaviour
                 //Debug.Log($"Iteration ={i}");
                 Gizmos.DrawSphere(p, 0.03f);
 
-                Vector3 normal = CalcNormal(p);
+                Vector3 normal = GetNormal(p);
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawRay(p, normal * 0.2f);
+                Gizmos.DrawRay(p, normal*10f );
 
 
                 Vector3 l = (lightSource.transform.position - p).normalized;
@@ -124,7 +126,7 @@ public class RayMarchingVisualiztion : MonoBehaviour
         //    for (float z = 0; z < zszie; z += 0.4f)
         //    {
 
-        //        Vector3 pos = new Vector3(x - xszie * 0.5f, 0, z - zszie * 0.5f);
+        //        Vector3 pos = new Vector3(x - xszie * 0.5f+0.5f, 0, z - zszie * 0.5f+0.5f);
         //        planePos.Add(pos);
         //        Gizmos.DrawWireCube(pos, new Vector3(0.2f, 0.01f, 0.2f));
         //    }
@@ -202,8 +204,9 @@ public class RayMarchingVisualiztion : MonoBehaviour
     Vector3 GetNormal(Vector3 p)
     {
         Vector3 normal = Vector3.zero;
-        float e = 0.0001f;
-        
+        float e = float.Epsilon;
+
+        //center diff
         normal = new Vector3( GetDistance(p + new Vector3(e, 0, 0)) - GetDistance(p - new Vector3(e, 0, 0)),
                               GetDistance(p + new Vector3(0, e, 0)) - GetDistance(p - new Vector3(0, e, 0)),
                               GetDistance(p + new Vector3(e, 0, 0)) - GetDistance(p - new Vector3(0, 0, e)));

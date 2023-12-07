@@ -341,16 +341,16 @@ float sdCappedCylinder( float3 p, float h, float r )
 				}
 
 //////////////////////////////////////////////////////////polarCoord
-
+/*
 				float2 polarCoord = float2 (atan2(i.uv.x,i.uv.y),length(i.uv));
 				polarCoord = float2 (polarCoord.x/(2*PI)+0.5+_Time.y*0.1,polarCoord.y);
 				float x = polarCoord.x*_FlowerNumber;
 				float m = min (frac(x),frac(1.0-x));
 				float c = smoothstep(0,0.1,.5*m-2*polarCoord.y+0.4);
-
+*/
 /////////////////////////////////////////////////////////
 				
-				col.rgb = c;
+				//col.rgb = c;
 				
 
 
