@@ -10,8 +10,7 @@ Material:
   m_Name: RayMarching_RayMarchingCloudTest
   m_Shader: {fileID: 4800000, guid: 44204fe71c71fb643bb02bc8fb4edfcc, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _ROTATECLOUD_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -30,33 +29,34 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _VolumeTex:
-        m_Texture: {fileID: 11700000, guid: 279361c09fe347840970071fccfdecfe, type: 3}
+        m_Texture: {fileID: 11700000, guid: 7526d98d9d267a7468d6c584359a9ac6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DarknessThreshold: 0.15
-    - _G: 0.263
-    - _K: 0.27
-    - _LightAbsorb: 3
-    - _LightStepSize: 0.01
+    - _DarknessThreshold: 0.05
+    - _G: 0.14
+    - _K: 0.23
+    - _LightAbsorb: 0.78
+    - _LightStepSize: 0.012
     - _Rotate: 0
     - _RotateCamera: 0
-    - _RotateCloud: 1
-    - _Step: 0.02
-    - _Transmittance: 1.4
+    - _RotateCloud: 0
+    - _Step: 0.04
+    - _Transmittance: 0.4
     - _UVWSclae: 1
-    - _desityScale: 0.46
+    - _desityScale: 3.51
     m_Colors:
     - _BoxSize: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _CameraPos: {r: 0, g: 0.68, b: 2.31, a: 2}
-    - _CloudColor: {r: 1, g: 0.9003494, b: 0.8537736, a: 1}
+    - _CameraPos: {r: 0, g: 0, b: 2.19, a: 2}
+    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LightPos: {r: -1.73, g: 0.89, b: -1.43, a: 1}
+    - _LightPos: {r: 2.7, g: 3.4, b: -2.55, a: 1}
     - _Offset: {r: 0.5, g: 0.5, b: 0.5, a: 0}
-    - _ShadowColor: {r: 0.19813566, g: 0.14386791, b: 0.5, a: 1}
+    - _ShadowColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
     - _Sphere1Pos: {r: 0.84, g: 0.75, b: 0, a: 0.08}
     - _Sphere2Pos: {r: 0, g: 0, b: 0, a: 0}
     - _Target: {r: 0, g: 0, b: 0, a: 1}
+    - _UVWSclae: {r: 1, g: 1, b: 1, a: 1}
     - _lightDir: {r: 0, g: 0, b: -4.29, a: 1}
   m_BuildTextureStacks: []

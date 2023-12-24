@@ -16,7 +16,7 @@ Shader "RayMarching/RayMarchingCloudTest"
         [Space(30)]
         _VolumeTex("ShapeTexture",3D)="white"{}
         _Offset("TextureOffset",Vector)=(0,0,0,0)
-        _UVWSclae("UVWSclae",float)=1
+        _UVWSclae("UVWSclae",vector)=(1,1,1,1)
         _Step("SampleStep",Range(0.01,0.5))=0.1
 
         [Space(30)]
@@ -81,7 +81,7 @@ Shader "RayMarching/RayMarchingCloudTest"
 
             float4 _CameraPos;
             float3 _Target,_LightPos;
-            float _UVWSclae;
+            float3 _UVWSclae;
 
             float _K;
             float4 _Sphere1Pos,_Sphere2Pos;
@@ -289,6 +289,58 @@ Shader "RayMarching/RayMarchingCloudTest"
 
             }
 
+
+
+ float3 knightlyHash( float3 p )
+{
+	p = float3( dot(p,float3(127.1,311.7, 74.7)),
+			  dot(p,float3(269.5,183.3,246.1)),
+			  dot(p,float3(113.5,271.9,124.6)));
+	p = -1.0 + 2.0*frac(sin(p)*43758.5453123);
+#if 1
+	float t=_Time.y*0.5;
+	float2x2 m=float2x2(cos(t),-sin(t), sin(t),cos(t));
+	p.xz=mul(m,p.xz);
+#endif
+	return p;
+}
+
+
+float noise( in float3 p )
+{
+    float3 i = floor( p );
+    float3 f = frac( p );
+	
+	float3 u = f*f*(3.0-2.0*f);
+
+    return lerp( lerp( lerp( dot( knightlyHash( i + float3(0.0,0.0,0.0) ), f - float3(0.0,0.0,0.0) ), 
+                          dot( knightlyHash( i + float3(1.0,0.0,0.0) ), f - float3(1.0,0.0,0.0) ), u.x),
+                     lerp( dot( knightlyHash( i + float3(0.0,1.0,0.0) ), f - float3(0.0,1.0,0.0) ), 
+                          dot( knightlyHash( i + float3(1.0,1.0,0.0) ), f - float3(1.0,1.0,0.0) ), u.x), u.y),
+                lerp( lerp( dot( knightlyHash( i + float3(0.0,0.0,1.0) ), f - float3(0.0,0.0,1.0) ), 
+                          dot( knightlyHash( i + float3(1.0,0.0,1.0) ), f - float3(1.0,0.0,1.0) ), u.x),
+                     lerp( dot( knightlyHash( i + float3(0.0,1.0,1.0) ), f - float3(0.0,1.0,1.0) ), 
+                          dot( knightlyHash( i + float3(1.0,1.0,1.0) ), f - float3(1.0,1.0,1.0) ), u.x), u.y), u.z );
+}
+
+const float3x3 m = float3x3( 0.00,  0.80,  0.60,
+                    -0.80,  0.36, -0.48,
+                    -0.60, -0.48,  0.64 );
+
+float fracalNoise( in float3 pos)
+{
+ 	float3 q = pos + float3(0, -_Time.y*0.025, 0);
+    float f  = 0.5000*noise( q ); q =mul(m,q)*2.01;
+    f += 0.2500*noise( q ); q = mul(m,q)*2.02;
+    f += 0.1250*noise( q ); q = mul(m,q)*2.03;
+    f += 0.0625*noise( q ); q = mul(m,q)*2.01;
+
+    //f = noise(pos*2.0);
+	f = smoothstep( -0.7, 0.7, f ); 
+    return f;
+}
+
+
             fixed4 frag (v2f i) : SV_Target
             {
                 float4 col = 0;
@@ -314,7 +366,7 @@ Shader "RayMarching/RayMarchingCloudTest"
                 float transmittance =_Transmittance;
                 float g = _G;
 
-                float result =0;
+                float3 result =0;
                 float mask =0;
 
                 float  d =0;
@@ -344,6 +396,13 @@ Shader "RayMarching/RayMarchingCloudTest"
                 {
                     float3 p =ro+rd*d;
 
+                    
+                    p*=_UVWSclae;
+
+                    //float noise = ValueNoisy(p.xz);
+
+
+
                     float3 lightOriginalPos = p;
                     if(_RotateCloud)
                         p.xz = mul(Rot(_Time.y),p.xz);
@@ -351,14 +410,15 @@ Shader "RayMarching/RayMarchingCloudTest"
 
                     float sphereDist = GetDistance_float(p).x;
                     
-                    float3 samplePos =p*_UVWSclae+_Offset;
-                    float3 lightSamplePos =lightOriginalPos*_UVWSclae+_Offset;;
+                    float3 samplePos =p+_Offset;
+                    float3 lightSamplePos =lightOriginalPos+_Offset;;
 
                     // if (sphereDist < 0)
                     //  density+=0.1; 
                      if (sphereDist < 0)
                     {
-                        float sampleDensity = tex3D(_VolumeTex,samplePos).r;\
+                        float sampleDensity = tex3D(_VolumeTex,samplePos).r;
+                        //float mathdensity=smoothstep(0.5, 0.8, fracalNoise(p*3));
                          
                         //云的密度
                         density += sampleDensity*_desityScale;
@@ -381,7 +441,7 @@ Shader "RayMarching/RayMarchingCloudTest"
                        
                         //Beer_Lambert Law
                         //光通过云层后的衰减
-                        lightTransmission = exp(-lightAccumulation);
+                        lightTransmission = BeerPower(lightAccumulation);
 
                         //通过一个阈值控制衰减和原本颜色的比例
                         shadow = darknessThreshold + lightTransmission * (1.0 - darknessThreshold);
@@ -404,21 +464,23 @@ Shader "RayMarching/RayMarchingCloudTest"
                 }
 
                 //对总密度进行一个衰减 模拟power-sugar-effect
-                transmission = BeerPower(density);
+                transmission = exp(-density);
 
                 //float shadowMask = saturate((1-shadow)*mask);
-                //三个值相加
+                //输出3个值
                 result =  float3(finalLight, transmission, transmittance);
 
 
-                col.rgb += lerp(_ShadowColor, _CloudColor, finalLight);
-                // col.a = transmittance;
+                col.rgb = lerp(_ShadowColor, _CloudColor, result.x);
+                
+                //col.a =result.y;
+                col.rgb = lerp(float3(0,0,0), col.rgb,1- result.y);
 
                 //col.rgb += result;
                 
                 //col.rgb =saturate(mask+lightShape);
 
-                col.rgb *=saturate(mask+lightShape);
+                // col.rgb *=saturate(mask+lightShape);
                 return col;
             }
             ENDCG
